@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  
+
+    <link rel="apple-touch-icon" type="image/png" href="https://cpwebassets.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png" />
+
+    <meta name="apple-mobile-web-app-title" content="CodePen">
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico" />
+
+    <link rel="mask-icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-b4b4269c16397ad2f0f7a01bcdf513a1994f4c94b8af2f191c09eb0d601762b1.svg" color="#111" />
+
+
+
+  
+    <script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+
+
+  <title>CodePen - Caro 3.0</title>
+
+    <link rel="canonical" href="https://codepen.io/viethoang012/pen/EZYRdx">
+  
+  
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  
+<style>
+html {
+    background: #fff;
+}
+
+body {
+    border-radius: 15px;
+    padding: 10px;
+    margin: 5px;
+    transition: 0.5s;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+/*=====HEADER=============================*/
+.header {
+	width: 100%;
+    margin-bottom: 15px;
+}
+
+#title {
+    width: 75%;
+    font-weight: bolder;
+	font-size: 40px;
+	letter-spacing: 50px;
+    text-align: center;
+    cursor: default;
+    display: inline-block;
+}
+
+.btn {
+    cursor: pointer;
+    font-size: 34px;
+    margin-left: 50px;
+    display: inline-block;
+}
+
+#title:active, .btn:active {
+    animation: blur 1.5s ease-out infinite;
+}
+
+/*=====SETTINGS=====*/
+
+#settings {
+    position: absolute;
+    background: transparent;
+    text-align: center;
+    cursor: default;
+    z-index: 15;
+    font-size: 45px;
+}
+
+#settings div {
+    width: 300px;
+    margin: 40px auto 0 auto;
+    cursor: pointer;
+}
+
+#board-size-option:before {
+    content: 'SIZE: ';
+}
+
+#icon-option:before {
+    content: 'ICON: ';
+}
+
+#theme-option:before {
+    content: 'THEME: ';
+}
+
+#theme-option {
+    width: 600px !important;
+}
+
+#settings div:active {
+    animation: blur 1.5s ease-out infinite;
+}
+
+/*=====RESULT=======*/
+
+#result {
+    position: absolute;
+    background: transparent;
+    text-align: center;
+    line-height: 500px;
+    color: #fff;
+    font-size: 100px;
+    cursor: default;
+    
+    animation: blur 1.5s ease-out infinite;
+    
+    z-index: 10;
+}
+
+.hide {
+    display: none;
+}
+
+@keyframes blur{
+  from {
+      text-shadow:0px 0px 10px #fff,
+                  0px 0px 10px #fff, 
+                  0px 0px 25px #fff,
+                  0px 0px 25px #fff,
+                  0px 0px 25px #fff,
+                  0px 0px 25px #fff,
+                  0px 0px 25px #fff,
+                  0px 0px 25px #fff,
+                  0px 0px 50px #fff,
+                  0px 0px 50px #fff,
+                  0px 0px 50px #7B96B8,
+                  0px 0px 150px #7B96B8,
+                  0px 10px 100px #7B96B8,
+                  0px 10px 100px #7B96B8,
+                  0px 10px 100px #7B96B8,
+                  0px 10px 100px #7B96B8,
+                  0px -10px 100px #7B96B8,
+                  0px -10px 100px #7B96B8;
+    }
+}
+
+/*=====BOARD GAME==========*/
+
+#board {
+   margin-top: 5px;
+	border: 1px solid #ccc;
+}
+
+.row {
+	clear: both;
+	overflow: hidden;
+}
+
+.box {
+	width: 34.5px;
+	height: 33px;
+	float: left;
+	padding-top: 2px;
+	text-align: center;
+	font-size: 30px;
+}
+
+.win-box {
+    background: #ff0;
+}
+
+/*Add border to each box*/
+.border-bottom {
+    border-bottom: 1px solid #ccc;
+}
+
+.border-right {
+    border-right: 1px solid #ccc;
+}
+</style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+</head>
+
+<body translate="no">
+  <body ng-app="myApp" ng-controller="GameController">
+	<div class="header">
+		<div id="title">CARO</div>    
+
+		<div id="undo-btn" class="btn"><i class="fa fa-undo" aria-hidden="true"></i></div>
+
+		<div id="settings-btn" class="btn"><i class="fa fa-cog" aria-hidden="true"></i></div>
+ 	</div><!-- header -->
+
+  	<div id="settings" class="hide">
+		<div id="back-btn">BACK</div>
+		<div id="board-size-option"></div>
+		<div id="icon-option"></div>
+		<div id="theme-option"></div>
+		<div id="reset-btn">NEW GAME</div>
+  	</div><!-- settings -->
+
+  	<div id="result" class="hide">
+  	</div>
+
+  	<div id="board" data-width="{{width}}" data-height="{{height}}">
+		<div class="row" ng-repeat="y in heights">
+			 <div class="box border-bottom border-right" ng-repeat="x in widths" ng-attr-id="{{'box-' + x + '-' + y}}"></div>
+			 <div class="box border-bottom" ng-attr-id="{{'box-' + (width - 1) + '-' + y}}"></div>
+		</div>
+		<div class="row">
+			 <div class="box border-right" ng-repeat="x in widths" ng-attr-id="{{'box-' + x + '-' + (height - 1)}}"></div>
+			 <div class="box" ng-attr-id="{{'box-' + (width - 1) + '-' + (height - 1)}}"></div>
+		</div>
+  	</div><!-- board -->
+</body>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js'></script>
+      <script id="rendered-js" >
+angular.module('myApp', []).controller('GameController', ['$scope', function ($scope) {
+
+  //Change board size
+  var sizeOption = 0;
+  var boardSizes = [
+  {
+    width: 19,
+    height: 19,
+    widthBox: 36 }];
+
+
+
+  //Draw the board game
+  $scope.width = boardSizes[sizeOption].width;
+  $scope.height = boardSizes[sizeOption].height;
+
+  $scope.widths = [];
+  $scope.heights = [];
+
+  var widthBox = boardSizes[sizeOption].widthBox;
+  var widthBoard;
+
+  var i = 0,j = 0;
+  while (i < $scope.height - 1 || i < $scope.width - 1) {if (window.CP.shouldStopExecution(0)) break;
+    if (i < $scope.height - 1)
+    $scope.heights.push(i);
+    if (i < $scope.width - 1)
+    $scope.widths.push(i);
+    i++;
+  }
+
+  //Setup game
+  window.CP.exitedLoop(0);$(function () {
+    setBoardSize();
+  });
+
+  $('#board-size-option').on('click', function () {
+
+    sizeOption !== boardSizes.length - 1 ? sizeOption++ : sizeOption = 0;
+
+    $scope.width = boardSizes[sizeOption].width;
+    $scope.height = boardSizes[sizeOption].height;
+    widthBox = boardSizes[sizeOption].widthBox;
+
+    setBoardSize();
+  });
+
+  var setBoardSize = function () {
+    widthBoard = widthBox * $scope.width - 1;
+
+    $('#board').css('width', widthBoard + '');
+    $('header').css('width', widthBoard + '');
+    $('body').css('width', widthBoard + 3 + '');
+
+    $('#result').css('width', widthBoard + '');
+    $('#result').css('height', $('#board').css('height'));
+
+    $('#settings').css('width', widthBoard + '');
+    $('#settings').css('height', $('#board').css('height'));
+
+    $('#board-size-option').html($scope.width + ' x ' + $scope.height);
+  };
+
+}]);
+
+$(document).ready(function () {
+
+  var width = $('#board').attr('data-width');
+  var height = $('#board').attr('data-height');
+
+  var player = 0;
+
+  var clickedBox = 0;
+  var winBoxes = [];
+
+  var history = [];
+
+  var resetBoard = []; //Back up board to reset game
+  var board = [];
+
+  //Create board array
+  var i = 0;
+  while (i < width) {if (window.CP.shouldStopExecution(1)) break;
+    board.push([]);
+    resetBoard.push([]);
+    j = 0;
+    while (j < height) {if (window.CP.shouldStopExecution(2)) break;
+      board[i][j] = -1;
+      resetBoard[i][j] = -1;
+      j++;
+    }window.CP.exitedLoop(2);
+    i++;
+  }
+
+  //Themes and icons
+  window.CP.exitedLoop(1);var iconOption = 0;
+  var icons = [
+  {
+    symbols: ["fa fa-times", "fa fa-circle-o"],
+    symbolColors: ["#0080ff", "#f00"],
+    tempColors: ["#ABC9D9", "#ECA2A2"],
+    playerNames: ["X", "O"] },
+
+  {
+    symbols: ["fa fa-mars", "fa fa-venus"],
+    symbolColors: ["#0080ff", "#f00"],
+    tempColors: ["#ABC9D9", "#ECA2A2"],
+    playerNames: ["Boy", "Girl"] },
+
+  {
+    symbols: ["fa fa-plane", "fa fa-rocket"],
+    symbolColors: ["#fff", "#fff"],
+    tempColors: ["#b3b3b3", "#b3b3b3"],
+    playerNames: ["Plane", "Rocket"] },
+
+  {
+    symbols: ["fa fa-apple", "fa fa-android"],
+    symbolColors: ["#8c8c8c", "#00b300"],
+    tempColors: ["#d9d9d9", "#99ff99"],
+    playerNames: ["iOS", "Android"] },
+
+  {
+    symbols: ["fa fa-facebook", "fa fa-weibo"],
+    symbolColors: ["#3A5799", "#ff0000"],
+    tempColors: ["#66a3ff", "#ff8080"],
+    playerNames: ["Facebook", "Weibo"] },
+
+  {
+    symbols: ["fa fa-frown-o", "fa fa-smile-o"],
+    symbolColors: ["#000", "#ff0000"],
+    tempColors: ["#ccc", "#ff8080"],
+    playerNames: ["Frown", "Smile"] }];
+
+
+
+  var themeOption = 0;
+  var themes = [
+  {
+    themeName: 'Default',
+    background: '#fff',
+    color: '#000',
+    border: '10px solid #333',
+    boxBorder: '#000' },
+
+  {
+    themeName: 'Classic',
+    background: '#FFF09B',
+    color: '#000',
+    border: '10px solid #866E28',
+    boxBorder: '##C5AC58' },
+
+  {
+    themeName: 'Black Board',
+    background: 'linear-gradient(#4A4A4A, #494949)',
+    color: '#fff',
+    border: '10px solid #A6673E',
+    boxBorder: '#ccc' },
+
+  {
+    themeName: 'Blue Board',
+    background: 'linear-gradient(#1E5C54, #358375, #337269)',
+    color: '#fff',
+    border: '10px solid #EC9B3F',
+    boxBorder: '#fff' }];
+
+
+
+  var setIconOption = function () {
+    $('#icon-option').html('<i class=\"' + icons[iconOption].symbols[0] + '\"></i> vs <i class=\"' + icons[iconOption].symbols[1] + '\"></i>');
+  };
+
+  var setThemeOption = function () {
+    $('#theme-option').html(themes[themeOption].themeName);
+
+    $('body').css('background', themes[themeOption].background);
+    $('body').css('color', themes[themeOption].color);
+    $('body').css('border', themes[themeOption].border);
+
+    $('#board').css('border-color', themes[themeOption].boxBorder);
+
+    $('.border-bottom').css('border-color', themes[themeOption].boxBorder);
+    $('.border-right').css('border-color', themes[themeOption].boxBorder);
+  };
+
+  //Set up theme and icon
+  $(function () {
+    setIconOption();
+    setThemeOption();
+  });
+
+  //Hover effect
+  $(function () {
+    $('.box').hover(
+    function () {//mouseover
+      var selectedBox = $(this);
+      if (!selectedBox.hasClass('clicked')) {
+        selectedBox.css('cursor', 'pointer');
+        selectedBox.css('color', icons[iconOption].tempColors[player]);
+        selectedBox.addClass(icons[iconOption].symbols[player]);
+      }
+    },
+    function () {//mouseleave
+      var selectedBox = $(this);
+      selectedBox.css('cursor', 'default');
+      if (!selectedBox.hasClass('clicked')) {
+        selectedBox.removeClass(icons[iconOption].symbols[player]);
+      }
+    });
+
+
+    $('#settings-btn').hover(
+    function () {
+      $(this).addClass('fa-spin');
+    },
+    function () {
+      $(this).removeClass('fa-spin');
+    });
+
+  });
+
+  //=====SETTINGS MENU=============//
+
+  //Open settings menu
+  $('#settings-btn').on('click', function () {
+    if ($('#settings').hasClass('hide')) {
+      $('#settings').removeClass('hide');
+      $('#board').css('opacity', '0.2');
+    } else {
+      $('#settings').addClass('hide');
+      $('#board').css('opacity', '1');
+    }
+  });
+
+  //Close settings menu
+  $('#back-btn').on('click', function () {
+    $('#settings').addClass('hide');
+    $('#board').css('opacity', '1');
+  });
+
+  $('#settings div').hover(
+  function () {
+    $(this).css('animation', 'blur 1.5s ease-out infinite');
+  },
+  function () {
+    $(this).css('animation', 'none');
+  });
+
+
+  $('#icon-option').on('click', function () {
+    //reset();
+
+    var oldIconOption = iconOption;
+    iconOption === icons.length - 1 ? iconOption = 0 : iconOption++;
+
+    //Change all icon in the board
+    for (var i = 0; i < width; i++) {if (window.CP.shouldStopExecution(3)) break;
+      for (var j = 0; j < height; j++) {if (window.CP.shouldStopExecution(4)) break;
+        var box = $('#box-' + i + '-' + j);
+        if (box.hasClass(icons[oldIconOption].symbols[0])) {
+          box.removeClass(icons[oldIconOption].symbols[0]);
+          box.css('color', icons[iconOption].symbolColors[0]);
+          box.addClass(icons[iconOption].symbols[0]);
+        } else if (box.hasClass(icons[oldIconOption].symbols[1])) {
+          box.removeClass(icons[oldIconOption].symbols[1]);
+          box.css('color', icons[iconOption].symbolColors[1]);
+          box.addClass(icons[iconOption].symbols[1]);
+        }
+      }window.CP.exitedLoop(4);
+    }window.CP.exitedLoop(3);
+
+    setIconOption();
+  });
+
+  $('#theme-option').on('click', function () {
+    //reset();
+
+    themeOption === themes.length - 1 ? themeOption = 0 : themeOption++;
+
+    setThemeOption();
+  });
+
+
+  //Click box event
+  $(function () {
+    $('.box').on('click', function () {
+      var selectedBox = $(this);
+      if (!selectedBox.hasClass('clicked')) {
+        selectedBox.css('color', icons[iconOption].symbolColors[player]);
+        selectedBox.addClass('clicked');
+        selectedBox.addClass(icons[iconOption].symbols[player]);
+
+        clickedBox++;
+
+        //Add to board
+        var arr = selectedBox.attr('id').split('-');
+        var x = parseInt(arr[1]);
+        var y = parseInt(arr[2]);
+        board[x][y] = player;
+
+        history.push([x, y]);
+
+        //Check game
+        var winner = player;
+        if (endGame(x, y)) {
+          window.setTimeout(function () {
+            $('#board').css('opacity', '0.5');
+
+            for (var i = 0; i < 5; i++) {if (window.CP.shouldStopExecution(5)) break;
+              $('#box-' + winBoxes[i][0] + '-' + winBoxes[i][1]).addClass('win-box');
+            }window.CP.exitedLoop(5);
+            $('#result').css('color', icons[iconOption].symbolColors[winner]);
+            $('#result').html(icons[iconOption].playerNames[winner] + ' wins!');
+            $('#result').removeClass('hide');
+          }, 500);
+        }
+        if (clickedBox === width * height) {
+          window.setTimeout(function () {
+            $('#board').css('opacity', '0.3');
+
+            $('#result').css('color', '#000');
+            $('#result').html('DRAW');
+            $('#result').removeClass('hide');
+          }, 500);
+        }
+
+        player === 0 ? player++ : player--;
+      }
+    });
+  });
+
+  //Restart game after showed winner
+  $('#result').on('click', function () {
+    $(this).html('');
+    $('#board').css('opacity', '1');
+
+    reset();
+  });
+
+  //Click reset button
+  $('#reset-btn').on('click', function () {
+    $('#settings').addClass('hide');
+    $('#board').css('opacity', '1');
+
+    reset();
+  });
+
+  //Reset game
+  var reset = function () {
+    $('.box').removeClass(icons[iconOption].symbols[0]);
+    $('.box').removeClass(icons[iconOption].symbols[1]);
+    $('.box').removeClass('clicked');
+    $('.box').removeClass('win-box');
+    $('#result').addClass('hide');
+
+    player = 0;
+    clickedBox = 0;
+    winBoxes = [];
+    history = [];
+
+    //Reset board
+    for (var i = 0; i < width; i++) {if (window.CP.shouldStopExecution(6)) break;
+      for (var j = 0; j < height; j++) {if (window.CP.shouldStopExecution(7)) break;
+        board[i][j] = resetBoard[i][j];
+      }window.CP.exitedLoop(7);
+    }window.CP.exitedLoop(6);
+  };
+
+  //UNDO button
+  $('#undo-btn').on('click', function () {
+    if (history.length !== 0 && $('#result').hasClass('hide')) {
+      var currentPos = history.pop();
+
+      //Remove current box
+      var currentBox = $('#box-' + currentPos[0] + '-' + currentPos[1]);
+      currentBox.removeClass(icons[iconOption].symbols[0]);
+      currentBox.removeClass(icons[iconOption].symbols[1]);
+      currentBox.removeClass('clicked');
+
+      board[currentPos[0]][currentPos[1]] = -1;
+      clickedBox--;
+
+      player === 0 ? player++ : player--;
+    }
+  });
+
+  //Check end game or not
+  var endGame = function (x, y) {
+    var rc = [
+    [0, -1, 0, 1], //n - s
+    [-1, 0, 1, 0], //w - e
+    [1, -1, -1, 1], //ne - sw
+    [-1, -1, 1, 1] //nw - se
+    ];
+    var i = x,j = y;
+    for (var direction = 0; direction < 4; direction++) {if (window.CP.shouldStopExecution(8)) break;
+      var count = 0;
+      //console.log('direction' + direction + ' ' + x + " " + y);
+
+      i = x;
+      j = y;
+      while (i >= 0 && i < width && j >= 0 && j < height &&
+      board[i][j] === board[x][y]) {if (window.CP.shouldStopExecution(9)) break;
+        count++;
+        //console.log('count: ' + count);
+        if (count === 5) {
+          var c = 0;
+          while (c < 5) {if (window.CP.shouldStopExecution(10)) break;
+            winBoxes.push([i, j]);
+            i += rc[direction][2];
+            j += rc[direction][3];
+            c++;
+          }
+          //console.log(winBoxes);
+          window.CP.exitedLoop(10);return true;
+        }
+        //console.log(i + ' ' + j);
+        i += rc[direction][0];
+        j += rc[direction][1];
+        //console.log('-->' + i + ' ' + j);
+      }window.CP.exitedLoop(9);
+
+      count--;
+      i = x;
+      j = y;
+
+      while (i >= 0 && i < width && j >= 0 && j < height &&
+      board[i][j] === board[x][y]) {if (window.CP.shouldStopExecution(11)) break;
+        count++;
+        //console.log('count: ' + count);
+        if (count === 5) {
+          var c = 0;
+          while (c < 5) {if (window.CP.shouldStopExecution(12)) break;
+            winBoxes.push([i, j]);
+            i += rc[direction][0];
+            j += rc[direction][1];
+            c++;
+          }
+          //console.log(winBoxes);
+          window.CP.exitedLoop(12);return true;
+        }
+        //console.log(i + ' ' + j);
+        i += rc[direction][2];
+        j += rc[direction][3];
+        //console.log('-->' + i + ' ' + j);
+      }window.CP.exitedLoop(11);
+    }window.CP.exitedLoop(8);
+    return false;
+  };
+
+});
+//# sourceURL=pen.js
+    </script>
+
+  
+</body>
+
+</html>
